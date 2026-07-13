@@ -485,7 +485,7 @@ envelope.addEventListener('mouseleave', () => { envelope.style.transform = ''; }
 /* ================= KINETIC HEADLINE ================= */
 const h1 = document.getElementById('kineticH1');
 const headlineText = 'Lababuchi🎓';
-headlineText.split('').forEach((ch,i) => {
+Array.from(headlineText).forEach((ch,i) => {
   const span = document.createElement('span');
   span.className = 'kletter';
   span.textContent = ch === ' ' ? '\u00A0' : ch;
