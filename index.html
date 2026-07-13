@@ -2,189 +2,572 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>For Chie 🎓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at center, #fff0f5, #f8e1e7);
-  overflow-x: hidden;
-  text-align: center;
-}
+  :root{
+    --paper: #FFF9F1;
+    --paper-warm: #FCF1E2;
+    --blush: #F3D3CA;
+    --blush-deep: #E8B9AE;
+    --rose: #C97B84;
+    --rose-light: #E3A9AC;
+    --maroon: #7A2E2E;
+    --maroon-dark: #501C1C;
+    --gold: #C9A227;
+    --gold-light: #EAD08A;
+    --ink: #4A342E;
+    --ink-soft: #8A7268;
+    --line: rgba(122,46,46,0.16);
+    --ease-signature: cubic-bezier(.22,1,.36,1);
+  }
 
-/* INTRO SCREEN */
-#intro {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 10;
-  cursor: pointer;
-}
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 
-#intro h1 {
-  font-size: 2em;
-  opacity: 0.8;
-}
+  html{ scroll-behavior: smooth; }
 
-/* PARTICLES */
-.particle {
-  position: fixed;
-  width: 5px;
-  height: 5px;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.6;
-  animation: float 10s infinite linear;
-}
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family:'Lora', serif;
+    overflow-x:hidden;
+    cursor: default;
+  }
 
-@keyframes float {
-  from { transform: translateY(100vh); }
-  to { transform: translateY(-10vh); }
-}
+  /* ============ ANIMATED MESH BACKGROUND ============ */
+  #mesh{
+    position: fixed; inset: -10%;
+    z-index: 0;
+    background:
+      radial-gradient(38% 30% at 15% 20%, rgba(233,185,174,0.55), transparent 60%),
+      radial-gradient(45% 35% at 85% 15%, rgba(201,162,39,0.20), transparent 60%),
+      radial-gradient(50% 40% at 80% 85%, rgba(201,123,132,0.35), transparent 60%),
+      radial-gradient(40% 35% at 10% 90%, rgba(250,232,214,0.7), transparent 60%),
+      var(--paper);
+    animation: meshShift 22s ease-in-out infinite alternate;
+    filter: blur(2px);
+  }
+  @keyframes meshShift{
+    0%{ transform: translate(0,0) scale(1); }
+    50%{ transform: translate(-1.5%, 2%) scale(1.04); }
+    100%{ transform: translate(2%, -1%) scale(1.02); }
+  }
 
-/* HERO */
-.hero {
-  margin-top: 100px;
-  opacity: 0;
-  transition: 2s;
-}
+  #grain{ position: fixed; inset:0; z-index: 1; opacity: 0.045; pointer-events:none; mix-blend-mode: multiply; }
+  #grain rect{ filter: url(#noiseFilter); }
 
-.hero.show {
-  opacity: 1;
-}
+  /* scroll progress */
+  #progress{ position: fixed; top:0; left:0; height:3px; width:0%; z-index:60;
+    background: linear-gradient(90deg, var(--rose), var(--gold)); transition: width 0.1s linear; }
 
-h1 {
-  font-size: 3em;
-  color: #d4a373;
-  text-shadow: 0 0 20px rgba(212,163,115,0.5);
-}
+  .particle{ position: fixed; pointer-events:none; z-index: 2; will-change: transform; animation: drift linear infinite; }
+  .p-dot{ border-radius:50%; background: var(--gold); opacity:0.4; }
+  .p-petal{ opacity: 0.55; }
+  @keyframes drift{
+    from{ transform: translateY(110vh) translateX(0) rotate(0deg); }
+    to{ transform: translateY(-12vh) translateX(var(--drift-x,20px)) rotate(300deg); }
+  }
 
-/* PHOTO */
-.photo img {
-  width: 260px;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-  margin-top: 20px;
-  transition: 0.5s;
-}
+  .sparkle{
+    position: fixed; z-index: 50; pointer-events:none;
+    width: 6px; height:6px; border-radius:50%;
+    background: radial-gradient(circle, var(--gold-light), transparent 70%);
+    animation: sparkleFade 900ms ease-out forwards;
+  }
+  @keyframes sparkleFade{
+    0%{ opacity: 0.9; transform: translate(-50%,-50%) scale(1); }
+    100%{ opacity: 0; transform: translate(-50%,-50%) translateY(-24px) scale(0.2); }
+  }
 
-.photo img:hover {
-  transform: scale(1.05);
-}
+  .burst-piece{
+    position: fixed; z-index: 40; pointer-events:none;
+    left: var(--bx); top: var(--by);
+    width: var(--sz); height: calc(var(--sz) * 1.4);
+    background: var(--bc);
+    border-radius: 2px 8px;
+    animation: burstFly 1100ms cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes burstFly{
+    0%{ transform: translate(-50%,-50%) rotate(0deg) scale(0.4); opacity: 1; }
+    100%{ transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1); opacity: 0; }
+  }
 
-/* MESSAGE */
-.message {
-  max-width: 700px;
-  margin: 80px auto;
-  font-size: 1.15em;
-  line-height: 1.9;
-  color: #333;
-  white-space: pre-line;
-  opacity: 0;
-  transition: 2s;
-}
+  #envelope-stage{
+    position: fixed; inset: 0; z-index: 20;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition: opacity 1s ease, visibility 1s ease, filter 1s ease;
+  }
+  #envelope-stage.hidden{ opacity:0; visibility:hidden; filter: blur(10px); pointer-events:none; }
 
-.message.show {
-  opacity: 1;
-}
+  .prompt{
+    font-family:'Caveat', cursive; font-weight:600;
+    font-size: 1.6em; color: var(--maroon-dark);
+    margin-bottom: 30px; letter-spacing:0.5px;
+    animation: pulse 2.4s ease-in-out infinite;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:0.7; transform: translateY(0); }
+    50%{ opacity:1; transform: translateY(-4px); }
+  }
 
-/* FOOTER */
-.footer {
-  margin: 80px 0;
-  color: #888;
-}
+  .envelope{ position: relative; width: 340px; height: 224px; cursor: pointer; perspective: 1400px; transition: transform 0.15s ease-out; }
+
+  .env-shadow{
+    position:absolute; left:8%; right:8%; bottom:-22px; height: 26px;
+    background: radial-gradient(ellipse at center, rgba(80,28,28,0.35), transparent 70%);
+    filter: blur(4px);
+    transition: transform 0.9s ease, opacity 0.9s ease;
+  }
+  .envelope.open .env-shadow{ transform: scaleX(0.7) translateY(6px); opacity:0.4; }
+
+  .env-back{
+    position:absolute; inset:0; border-radius:8px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 6px),
+      linear-gradient(160deg, var(--blush) 0%, var(--blush-deep) 100%);
+    box-shadow: 0 30px 55px rgba(80,28,28,0.28), 0 4px 14px rgba(80,28,28,0.18), inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+
+  .stamp{
+    position:absolute; top:14px; right:16px; width:46px; height:56px; z-index:2;
+    background: linear-gradient(160deg, #fff 0%, #FBF1E4 100%);
+    -webkit-mask-image: radial-gradient(circle 2.6px at 0 0, transparent 98%, #000 100%),
+      radial-gradient(circle 2.6px at 100% 0, transparent 98%, #000 100%);
+    padding: 4px;
+    box-shadow: 0 2px 6px rgba(80,28,28,0.2);
+    border: 1px solid rgba(122,46,46,0.15);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .stamp svg{ width: 26px; height:26px; }
+  .postmark{
+    position:absolute; top: 26px; right: 30px; width: 74px; height:74px; z-index:2;
+    opacity:0.68; transform: rotate(-8deg); pointer-events:none;
+  }
+  .postmark circle{ fill:none; stroke: var(--maroon-dark); stroke-width:1; }
+  .postmark text{ font-family:'Lora',serif; font-size:6.3px; letter-spacing:2px; fill: var(--maroon-dark); text-transform:uppercase; }
+
+  .env-address{ position:absolute; top: 84px; left:0; right:0; text-align:center; z-index:2; pointer-events:none; }
+  .env-address .to{ font-family:'Caveat', cursive; font-weight:700; font-size: 2.1em; color: var(--maroon-dark); text-shadow: 0 1px 0 rgba(255,255,255,0.3); }
+  .env-address .sub{ display:block; font-family:'Lora', serif; font-size:0.72em; letter-spacing:3px; text-transform:uppercase; color: var(--ink-soft); margin-top:5px; }
+
+  .env-letter{
+    position:absolute; left:22px; right:22px; top:16px; height: 178px;
+    background: var(--paper); border-radius:3px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index:1;
+    transition: transform 1.15s cubic-bezier(.34,1.56,.64,1), opacity 0.5s ease 0.4s;
+  }
+  .env-letter::before{ content:''; position:absolute; inset:10px; border: 1px solid rgba(122,46,46,0.12); border-radius: 2px; }
+  .envelope.open .env-letter{ transform: translateY(-255px) rotate(-2deg) scale(1.03); }
+
+  .env-front{
+    position:absolute; bottom:0; left:0; right:0; height: 138px;
+    background: linear-gradient(160deg, var(--rose) 0%, var(--maroon) 100%);
+    clip-path: polygon(0 100%, 50% 32%, 100% 100%);
+    z-index:3; border-radius:0 0 8px 8px;
+  }
+
+  .env-flap{
+    position:absolute; top:0; left:0; right:0; height: 122px;
+    background: linear-gradient(200deg, var(--rose-light) 0%, var(--maroon) 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 92%);
+    transform-origin: top center;
+    transition: transform 1s cubic-bezier(.6,-0.4,.3,1.3);
+    z-index:4; border-radius:8px 8px 0 0;
+  }
+  .envelope.open .env-flap{ transform: rotateX(178deg); z-index:0; }
+
+  .seal-wrap{ position:absolute; top: 106px; left:50%; transform: translate(-50%,-50%); width: 62px; height: 62px; z-index:5; }
+  .seal{
+    position:absolute; inset:0; border-radius:50%;
+    background: radial-gradient(circle at 35% 28%, #9c4141, var(--maroon-dark) 72%);
+    box-shadow: 0 5px 12px rgba(80,28,28,0.55), inset 0 0 0 2px rgba(255,255,255,0.1);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--gold-light); font-family:'Fraunces', serif; font-style:italic; font-size:1.4em;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1), opacity 0.4s ease;
+  }
+  .seal::after{ content:''; position:absolute; inset:-6px; border-radius:50%; animation: sealGlow 2.6s ease-in-out infinite; }
+  @keyframes sealGlow{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(201,162,39,0.35); }
+    50%{ box-shadow: 0 0 14px 6px rgba(201,162,39,0.28); }
+  }
+  .envelope:hover .seal{ transform: scale(1.07) rotate(-3deg); }
+
+  .seal-half{ position:absolute; top:0; width:50%; height:100%; overflow:hidden; opacity:0; pointer-events:none; }
+  .seal-half.left{ left:0; border-radius: 50% 0 0 50%; }
+  .seal-half.right{ right:0; border-radius: 0 50% 50% 0; }
+  .seal-half::before{ content:''; position:absolute; inset:0; width:200%; background: radial-gradient(circle at 35% 28%, #9c4141, var(--maroon-dark) 72%); }
+  .seal-half.right::before{ right:0; left:auto; }
+  .envelope.open .seal{ opacity:0; transition: opacity 0.15s ease; }
+  .envelope.open .seal-half{ opacity:1; animation: crackFly 0.6s cubic-bezier(.4,0,.6,1) forwards; }
+  .envelope.open .seal-half.left{ animation-name: crackFlyLeft; }
+  .envelope.open .seal-half.right{ animation-name: crackFlyRight; }
+  @keyframes crackFlyLeft{ to{ transform: translate(-26px,-16px) rotate(-50deg); opacity:0; } }
+  @keyframes crackFlyRight{ to{ transform: translate(26px,-16px) rotate(50deg); opacity:0; } }
+
+  .hint-tap{ margin-top: 30px; font-size:0.78em; letter-spacing:2.5px; text-transform:uppercase; color: var(--ink-soft); opacity:0.75; }
+
+  #content{
+    position: relative; z-index: 5;
+    max-width: 780px; margin:0 auto; padding: 100px 24px 70px; text-align:center;
+    opacity:0; transform: translateY(30px);
+    transition: opacity 1.3s ease, transform 1.3s ease;
+  }
+  #content.show{ opacity:1; transform: translateY(0); }
+
+  .eyebrow{ font-family:'Caveat', cursive; font-weight:600; font-size:1.7em; color: var(--rose); display:inline-block; position:relative; }
+  .eyebrow::before, .eyebrow::after{ content:'✦'; color: var(--gold); font-size:0.5em; vertical-align:middle; margin: 0 10px; opacity:0.8; }
+
+  h1{
+    font-family:'Fraunces', serif; font-weight:700; font-size: clamp(2.4em, 7vw, 3.8em);
+    color: var(--maroon-dark); margin: 6px 0 8px; line-height:1.05;
+    background: linear-gradient(100deg, var(--maroon-dark) 30%, var(--rose) 50%, var(--maroon-dark) 70%);
+    background-size: 220% auto;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine{ to{ background-position: -220% center; } }
+
+  .divider{ width: 80px; height:2px; margin: 24px auto 34px; background: linear-gradient(90deg, transparent, var(--gold), transparent); position: relative; }
+  .divider::before{ content:'❋'; position:absolute; left:50%; top:50%; transform: translate(-50%,-50%); color: var(--gold); background: var(--paper); padding: 0 10px; font-size:0.9em; }
+
+  .photo-wrap{ margin: 14px 0 56px; perspective: 900px; }
+  .photo-frame{
+    display:inline-block; padding: 16px 16px 40px; background: var(--paper);
+    border-radius: 4px; box-shadow: 0 25px 50px rgba(80,28,28,0.22), 0 3px 10px rgba(0,0,0,0.06);
+    transform: rotate(-2.5deg);
+    transition: transform 0.25s ease-out, box-shadow 0.3s ease;
+    position: relative;
+  }
+  .photo-frame:hover{ box-shadow: 0 32px 60px rgba(80,28,28,0.28), 0 3px 10px rgba(0,0,0,0.08); }
+  .tape{ position:absolute; top:-14px; left:50%; transform: translateX(-50%) rotate(-3deg); width: 70px; height:26px; background: rgba(234,208,138,0.55); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+
+  .photo-frame img{ width: 260px; max-width: 58vw; display:block; border-radius: 2px; }
+  .photo-fallback{
+    width:260px; max-width:58vw; aspect-ratio:1; border-radius:2px;
+    background: linear-gradient(160deg, var(--blush), var(--rose));
+    display:none; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-style:italic; font-size:4.4em; color: var(--paper);
+  }
+  .photo-frame img.broken{ display:none; }
+  .photo-frame img.broken + .photo-fallback{ display:flex; }
+
+  .caption{ font-family:'Caveat', cursive; font-weight:600; font-size:1.4em; color: var(--ink-soft); margin-top:16px; }
+
+  .message{
+    text-align:left; font-size: 1.1em; line-height: 2; color: var(--ink);
+    background: var(--paper); padding: 56px 48px; border-radius: 4px;
+    box-shadow: 0 15px 50px rgba(80,28,28,0.12);
+    position: relative; border: 1px solid rgba(122,46,46,0.06);
+  }
+  .message::before{ content:'"'; position:absolute; top:-18px; left:30px; font-family:'Fraunces', serif; font-size:5em; color: var(--blush-deep); font-style:italic; line-height:1; }
+  .message::after{ content:''; position:absolute; inset: 10px; border: 1px solid rgba(201,162,39,0.18); border-radius: 2px; pointer-events:none; }
+
+  .corner{ position:absolute; width:26px; height:26px; opacity:0.55; }
+  .corner path{ stroke: var(--gold); stroke-width:1.1; fill:none; }
+  .corner.tl{ top:6px; left:6px; }
+  .corner.tr{ top:6px; right:6px; transform: scaleX(-1); }
+  .corner.bl{ bottom:6px; left:6px; transform: scaleY(-1); }
+  .corner.br{ bottom:6px; right:6px; transform: scale(-1,-1); }
+
+  .letterhead{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size: 0.72em; letter-spacing:1.5px; text-transform:uppercase; color: var(--ink-soft);
+    padding-bottom: 14px; margin-bottom: 30px; border-bottom: 1px solid var(--line);
+  }
+  .letterhead .from{ font-family:'Caveat', cursive; text-transform:none; letter-spacing:0.5px; font-size:1.4em; color: var(--rose); }
+
+  .message p{ margin: 0 0 1.7em; opacity:0; transform: translateY(16px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .message p.in-view{ opacity:1; transform: translateY(0); }
+  .message p:last-child{ margin-bottom:0; }
+  .message p.first::first-letter{ font-family:'Fraunces', serif; font-size: 3.2em; font-weight:700; float:left; line-height: 0.8; margin: 6px 8px 0 0; color: var(--maroon); }
+
+  .footer{
+    margin: 76px 0 20px; font-family:'Caveat', cursive; font-weight:700; font-size:1.8em; color: var(--maroon-dark);
+    opacity:0; transform: translateY(10px); transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .footer.in-view{ opacity:1; transform: translateY(0); }
+  .footer .heart{ color: var(--rose); display:inline-block; animation: beat 1.4s ease-in-out infinite; }
+  @keyframes beat{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.2); } }
+
+  #music-toggle{
+    position: fixed; bottom: 24px; right: 24px; z-index: 30;
+    width: 58px; height:58px; border-radius:50%;
+    background: linear-gradient(160deg, var(--rose), var(--maroon));
+    border:none; cursor:pointer; box-shadow: 0 10px 24px rgba(80,28,28,0.4);
+    display:flex; align-items:center; justify-content:center; gap:3px;
+    opacity:0; pointer-events:none; transform: scale(0.7);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), opacity 0.5s ease, box-shadow 0.3s ease;
+  }
+  #music-toggle.visible{ opacity:1; pointer-events:auto; transform: scale(1); }
+  #music-toggle:hover{ box-shadow: 0 14px 30px rgba(80,28,28,0.5); }
+  #music-toggle .bar{ width: 3.5px; background: var(--gold-light); border-radius: 2px; height: 10px; }
+  #music-toggle.playing .bar{ animation: eq 0.9s ease-in-out infinite; }
+  #music-toggle .bar:nth-child(1){ animation-delay: 0s; }
+  #music-toggle .bar:nth-child(2){ animation-delay: 0.2s; }
+  #music-toggle .bar:nth-child(3){ animation-delay: 0.4s; }
+  @keyframes eq{ 0%,100%{ height:8px; } 50%{ height:20px; } }
+
+  @media (max-width: 480px){
+    .message{ padding: 40px 26px; }
+    .envelope{ width: 280px; height: 190px; }
+    .env-address .to{ font-size: 1.7em; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
 </style>
 </head>
-
 <body>
 
-<!-- 🎬 INTRO -->
-<div id="intro">
-  <h1>Click anywhere… this is for you 💌</h1>
-</div>
+<div id="mesh"></div>
+<svg id="grain" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter></defs>
+  <rect width="100%" height="100%"/>
+</svg>
+<div id="progress"></div>
 
-<!-- 🎵 MUSIC -->
-<audio id="bgmusic" loop>
+<audio id="bgmusic" loop preload="auto">
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ✨ PARTICLES -->
+<div id="envelope-stage">
+  <div class="prompt">tap the seal to open, Chie</div>
+  <div class="envelope" id="envelope">
+    <div class="env-shadow"></div>
+    <div class="env-back"></div>
+    <div class="stamp">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L1 8l11 5 9-4.1V17h2V8L12 3z" fill="#7A2E2E"/>
+        <path d="M5 10.5V15c0 1.7 3.1 3 7 3s7-1.3 7-3v-4.5l-7 3.2-7-3.2z" fill="#C97B84"/>
+      </svg>
+    </div>
+    <svg class="postmark" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="30"/>
+      <circle cx="40" cy="40" r="24"/>
+      <text><textPath href="#pmPath" startOffset="2">GRADUATION · 2026 ·</textPath></text>
+      <path id="pmPath" d="M 40 10 A 30 30 0 1 1 39.9 10" fill="none"/>
+    </svg>
+    <div class="env-address">
+      <span class="to">To Chie</span>
+      <span class="sub">on her graduation day</span>
+    </div>
+    <div class="env-letter"></div>
+    <div class="env-front"></div>
+    <div class="env-flap"></div>
+    <div class="seal-wrap">
+      <div class="seal">J</div>
+      <div class="seal-half left"></div>
+      <div class="seal-half right"></div>
+    </div>
+  </div>
+  <div class="hint-tap">a small letter, made for you</div>
+</div>
+
+<button id="music-toggle" title="Play / pause our song">
+  <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+</button>
+
+<div id="content">
+  <div class="eyebrow">Congratulations</div>
+  <h1>Chie 🎓</h1>
+  <div class="divider"></div>
+
+  <div class="photo-wrap">
+    <div class="photo-frame" id="photoFrame">
+      <div class="tape"></div>
+      <img src="photo.jpg" alt="Chie" onerror="this.classList.add('broken')">
+      <div class="photo-fallback">C</div>
+    </div>
+    <div class="caption">Kutchie Ebrano Viña — 18, and graduating 💛</div>
+  </div>
+
+  <div class="message" id="messageBox">
+    <svg class="corner tl" viewBox="0 0 26 26"><path d="M2 24V8C2 4.7 4.7 2 8 2H24"/></svg>
+    <svg class="corner tr" viewBox="0 0 26 26"><path d="M2 24V8C2 4.7 4.7 2 8 2H24"/></svg>
+    <svg class="corner bl" viewBox="0 0 26 26"><path d="M2 24V8C2 4.7 4.7 2 8 2H24"/></svg>
+    <svg class="corner br" viewBox="0 0 26 26"><path d="M2 24V8C2 4.7 4.7 2 8 2H24"/></svg>
+    <div class="letterhead"><span class="from">From Jayjay</span><span>Philippines · June 2026</span></div>
+    <p class="reveal-p first">Hi, Chie.</p>
+    <p class="reveal-p">Gusto ko magsimula sa thank you as gratitude.<br>Happy 10 months of friendship, Chie!! Grabe… ang tagal na rin pala, no? Parang ang bilis lang ng panahon, pero at the same time, ang dami na rin nating pinagdaanan kahit sa simple conversation noh.</p>
+    <p class="reveal-p">Naalala ko pa nung first time tayong nag-chat. Ang tagal mong mag-reply noon 😭 to the point na akala ko bata ka lang, mga 13–15 years old HAHAHA. Hindi ko inexpect na darating yung time na ikaw na 'to ngayon—graduating, 18 years old, si Kutchie Ebrano Viña. Nakakatuwa lang isipin na from that simple start, naging ganito ka-importante yung presence mo sa buhay ko.</p>
+    <p class="reveal-p">Chie, sa totoo lang… ikaw yung isa sa pinaka genuine na taong nakilala ko you are the only friend that I considered. Yung tipong sobrang bait mo, marunong ka mag-appreciate even little things, and ang babaw pa ng kaligayahan mo HAHAH . Ang dali mong pasayahin, pero at the same time, ang lalim din ng pagkatao mo. And honestly… you're just so naturally beautiful, inside and out. Yung tipong hindi mo kailangan mag-effort para maging special—kasi ikaw na 'yun eh.</p>
+    <p class="reveal-p">Hindi ko rin maitatanggi… habang tumatagal, I found myself slowly falling. Hindi ko naman plan 'yun, nangyari lang. Kasi you became exactly the kind of person I admire. Pero alam mo naman… may mga bagay na hindi talaga para sa'tin, and maybe this is one of those. Kaya instead of focusing on that, mas pinili kong i-value kung ano meron tayo ngayon—because having you in my life is already something I'm grateful for.</p>
+    <p class="reveal-p">And now, look at you… graduating. I'm really, really proud of you, Chie. Hindi lang dahil natapos mo yung isang chapter ng buhay mo, pero dahil kinaya mo lahat ng challenges na dinaanan mo. You deserve this moment. Lahat ng pagod, puyat, hirap—worth it lahat 'yan. This is your victory, and I hope you truly feel how special this moment is.</p>
+    <p class="reveal-p">Chie, gusto ko lang ipaalala sa'yo… I'm always here. I may not that active in socmed, I may not okay on the moment, o kahit busy ako, gagawa at gagawa ako ng oras para sa'yo. If dumating yung time na feeling mo wala kang malapitan, nandito lang ako. You can talk to me, vent out, sabihin mo lahat. Gagawin nating magaan 'yan, okay?</p>
+    <p class="reveal-p">I'll be your second comfort zone kapag mabigat na lahat. Kapag parang ang gulo na ng mundo, I'll try to be your peace. Kapag parang ang dilim na, I'll be there to remind you na may liwanag pa rin. I'll remind you na everything happens for a reason—even if hindi mo pa siya naiintindihan ngayon. One day, everything will make sense.</p>
+    <p class="reveal-p">Alam mo, every pain, every struggle… hindi lang siya basta paghihirap. It's growth. It's you becoming stronger, wiser, and better. And I believe in you, Chie. I always have.</p>
+    <p class="reveal-p">As you step into a bigger world, mas marami ka pang makikilala—iba't ibang tao, iba't ibang ugali. May mga magiging mabuti, may mga hindi. Kaya please… choose your circle wisely. Kasi kung sino yung mga taong nakapaligid sa'yo, sila rin yung makaka-influence kung sino ka magiging. You deserve people who will lift you up, not bring you down.</p>
+    <p class="reveal-p">This is your next level in life. New environment, new experiences, new challenges. But don't forget to enjoy everything, okay? Hindi lahat kailangang seryosohin. Take your time, live your moments, and don't be too hard on yourself.</p>
+    <p class="reveal-p">And no matter what happens…<br>I'll always be here, silently supporting you, cheering for you, and believing in you.</p>
+    <p class="reveal-p">Congratulations, Chie. 🎓<br>I'm so proud of you. Always.</p>
+  </div>
+
+  <div class="footer" id="footerSig">Made with heart by Jayjay <span class="heart">💛</span></div>
+</div>
+
 <script>
-for(let i=0;i<40;i++){
-  let p=document.createElement("div");
-  p.className="particle";
-  p.style.left=Math.random()*100+"vw";
-  p.style.animationDuration=(5+Math.random()*5)+"s";
-  document.body.appendChild(p);
-}
-</script>
+  const petalSVG = `<svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><path d="M7 0C9 3 14 5 7 14C0 5 5 3 7 0Z" fill="%23C97B84"/></svg>`;
+  for(let i=0;i<26;i++){
+    const isPetal = i % 3 === 0;
+    const p = document.createElement('div');
+    p.className = 'particle ' + (isPetal ? 'p-petal' : 'p-dot');
+    if(isPetal){
+      p.style.width = '13px'; p.style.height='13px';
+      p.style.backgroundImage = `url('data:image/svg+xml;utf8,${petalSVG}')`;
+      p.style.backgroundSize = 'contain';
+    } else {
+      const s = (3+Math.random()*4).toFixed(1);
+      p.style.width = s+'px'; p.style.height = s+'px';
+    }
+    p.style.left = Math.random()*100+'vw';
+    p.style.setProperty('--drift-x', (Math.random()*60-30)+'px');
+    p.style.animationDuration = (10+Math.random()*10)+'s';
+    p.style.animationDelay = (Math.random()*10)+'s';
+    document.body.appendChild(p);
+  }
 
-<!-- 🎓 HERO -->
-<div class="hero" id="hero">
-  <h1>Congratulations, Chie 🎓</h1>
-</div>
+  let lastSpark = 0;
+  function spawnSparkle(x,y){
+    const now = performance.now();
+    if(now - lastSpark < 45) return;
+    lastSpark = now;
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = x+'px';
+    s.style.top = y+'px';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 950);
+  }
+  window.addEventListener('mousemove', e => spawnSparkle(e.clientX, e.clientY));
+  window.addEventListener('touchmove', e => {
+    if(e.touches[0]) spawnSparkle(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
 
-<!-- 📸 PHOTO -->
-<div class="photo">
-  <img src="photo.jpg">
-</div>
+  function burst(x, y, count=26){
+    const colors = ['#C9A227','#E8B9AE','#C97B84','#EAD08A','#7A2E2E'];
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'burst-piece';
+      const angle = Math.random()*Math.PI*2;
+      const dist = 60 + Math.random()*140;
+      el.style.setProperty('--bx', x+'px');
+      el.style.setProperty('--by', y+'px');
+      el.style.setProperty('--dx', Math.cos(angle)*dist+'px');
+      el.style.setProperty('--dy', Math.sin(angle)*dist - 40 +'px');
+      el.style.setProperty('--rot', (Math.random()*520-260)+'deg');
+      el.style.setProperty('--sz', (5+Math.random()*5)+'px');
+      el.style.setProperty('--bc', colors[i % colors.length]);
+      el.style.animationDelay = (Math.random()*120)+'ms';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 1400);
+    }
+  }
 
-<!-- 💌 MESSAGE (UNCHANGED) -->
-<div class="message" id="msg">
-Hi, Chie.
+  const envelope = document.getElementById('envelope');
+  envelope.addEventListener('mousemove', e => {
+    const r = envelope.getBoundingClientRect();
+    const px = (e.clientX - r.left)/r.width - 0.5;
+    const py = (e.clientY - r.top)/r.height - 0.5;
+    envelope.style.transform = `rotateY(${px*8}deg) rotateX(${-py*8}deg)`;
+  });
+  envelope.addEventListener('mouseleave', () => { envelope.style.transform = ''; });
 
-Gusto ko magsimula sa thank you as gratitude.
-Happy 10 months of friendship, Chie!! Grabe… ang tagal na rin pala, no? Parang ang bilis lang ng panahon, pero at the same time, ang dami na rin nating pinagdaanan kahit sa simple conversation noh.
+  const stage = document.getElementById('envelope-stage');
+  const content = document.getElementById('content');
+  const music = document.getElementById('bgmusic');
+  const musicToggle = document.getElementById('music-toggle');
+  let opened = false;
 
-Naalala ko pa nung first time tayong nag-chat. Ang tagal mong mag-reply noon 😭 to the point na akala ko bata ka lang, mga 13–15 years old HAHAHA. Hindi ko inexpect na darating yung time na ikaw na ‘to ngayon—graduating, 18 years old, si Kutchie Ebrano Viña. Nakakatuwa lang isipin na from that simple start, naging ganito ka-importante yung presence mo sa buhay ko.
+  envelope.addEventListener('click', (e) => {
+    if(opened) return;
+    opened = true;
+    envelope.classList.add('open');
+    envelope.style.transform = '';
 
-Chie, sa totoo lang… ikaw yung isa sa pinaka genuine na taong nakilala ko you are the only friend that I considered. Yung tipong sobrang bait mo, marunong ka mag-appreciate even little things, and ang babaw pa ng kaligayahan mo HAHAH . Ang dali mong pasayahin, pero at the same time, ang lalim din ng pagkatao mo. And honestly… you’re just so naturally beautiful, inside and out. Yung tipong hindi mo kailangan mag-effort para maging special—kasi ikaw na ‘yun eh.
+    const r = envelope.getBoundingClientRect();
+    burst(r.left + r.width/2, r.top + r.height*0.42, 30);
 
-Hindi ko rin maitatanggi… habang tumatagal, I found myself slowly falling. Hindi ko naman plan ‘yun, nangyari lang. Kasi you became exactly the kind of person I admire. Pero alam mo naman… may mga bagay na hindi talaga para sa’tin, and maybe this is one of those. Kaya instead of focusing on that, mas pinili kong i-value kung ano meron tayo ngayon—because having you in my life is already something I’m grateful for.
+    music.volume = 0;
+    music.play().then(()=>{
+      musicToggle.classList.add('playing');
+      fadeAudio(1, 3200);
+    }).catch((err)=>{
+      console.warn('Music could not play — make sure music.mp3 sits next to this HTML file.', err);
+    });
+    musicToggle.classList.add('visible');
 
-And now, look at you… graduating. I’m really, really proud of you, Chie. Hindi lang dahil natapos mo yung isang chapter ng buhay mo, pero dahil kinaya mo lahat ng challenges na dinaanan mo. You deserve this moment. Lahat ng pagod, puyat, hirap—worth it lahat ‘yan. This is your victory, and I hope you truly feel how special this moment is.
+    setTimeout(()=>{ stage.classList.add('hidden'); }, 1350);
+    setTimeout(()=>{
+      content.classList.add('show');
+      burst(window.innerWidth/2, 120, 40);
+    }, 1650);
+  });
 
-Chie, gusto ko lang ipaalala sa’yo… I’m always here. I may not that active in socmed, I may not okay on the moment, o kahit busy ako, gagawa at gagawa ako ng oras para sa’yo. If dumating yung time na feeling mo wala kang malapitan, nandito lang ako. You can talk to me, vent out, sabihin mo lahat. Gagawin nating magaan ‘yan, okay?
+  let fadeTimer = null;
+  function fadeAudio(target, duration){
+    clearInterval(fadeTimer);
+    const steps = 40;
+    const stepTime = duration / steps;
+    const start = music.volume;
+    const delta = (target - start) / steps;
+    let i = 0;
+    fadeTimer = setInterval(()=>{
+      i++;
+      const v = start + delta * i;
+      music.volume = Math.min(1, Math.max(0, v));
+      if(i >= steps){
+        clearInterval(fadeTimer);
+        if(target === 0) music.pause();
+      }
+    }, stepTime);
+  }
 
-I’ll be your second comfort zone kapag mabigat na lahat. Kapag parang ang gulo na ng mundo, I’ll try to be your peace. Kapag parang ang dilim na, I’ll be there to remind you na may liwanag pa rin. I’ll remind you na everything happens for a reason—even if hindi mo pa siya naiintindihan ngayon. One day, everything will make sense.
+  musicToggle.addEventListener('click', () => {
+    if(music.paused){
+      music.volume = 0;
+      music.play().then(()=>{
+        musicToggle.classList.add('playing');
+        fadeAudio(1, 1800);
+      });
+    } else {
+      musicToggle.classList.remove('playing');
+      fadeAudio(0, 1200);
+    }
+  });
 
-Alam mo, every pain, every struggle… hindi lang siya basta paghihirap. It’s growth. It’s you becoming stronger, wiser, and better. And I believe in you, Chie. I always have.
+  /* scroll progress bar */
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = (scrolled || 0) + '%';
+  });
 
-As you step into a bigger world, mas marami ka pang makikilala—iba’t ibang tao, iba’t ibang ugali. May mga magiging mabuti, may mga hindi. Kaya please… choose your circle wisely. Kasi kung sino yung mga taong nakapaligid sa’yo, sila rin yung makaka-influence kung sino ka magiging. You deserve people who will lift you up, not bring you down.
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
 
-This is your next level in life. New environment, new experiences, new challenges. But don’t forget to enjoy everything, okay? Hindi lahat kailangang seryosohin. Take your time, live your moments, and don’t be too hard on yourself.
+  document.querySelectorAll('.reveal-p, #footerSig').forEach(el => io.observe(el));
 
-And no matter what happens…
-I’ll always be here, silently supporting you, cheering for you, and believing in you.
-
-Congratulations, Chie. 🎓
-I’m so proud of you. Always.
-</div>
-
-<div class="footer">
-Made with heart by Jayjay 💛
-</div>
-
-<!-- 🎬 SCRIPT -->
-<script>
-const intro = document.getElementById("intro");
-const music = document.getElementById("bgmusic");
-const hero = document.getElementById("hero");
-const msg = document.getElementById("msg");
-
-intro.onclick = () => {
-  intro.style.display = "none";
-  music.play();
-  setTimeout(()=>hero.classList.add("show"),500);
-  setTimeout(()=>msg.classList.add("show"),1500);
-};
+  const photoFrame = document.getElementById('photoFrame');
+  photoFrame.addEventListener('mousemove', e => {
+    const r = photoFrame.getBoundingClientRect();
+    const px = (e.clientX - r.left)/r.width - 0.5;
+    const py = (e.clientY - r.top)/r.height - 0.5;
+    photoFrame.style.transform = `rotate(-2.5deg) rotateY(${px*10}deg) rotateX(${-py*10}deg)`;
+  });
+  photoFrame.addEventListener('mouseleave', () => { photoFrame.style.transform = 'rotate(-2.5deg)'; });
 </script>
 
 </body>
