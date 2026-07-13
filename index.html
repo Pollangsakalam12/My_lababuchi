@@ -483,13 +483,11 @@ envelope.addEventListener('mousemove', e => {
 envelope.addEventListener('mouseleave', () => { envelope.style.transform = ''; });
 
 /* ================= KINETIC HEADLINE ================= */
-const headlineText = 'Chie 🎓';
-
-[...headlineText].forEach((ch,i)=>{
+const headlineText = 'Chie🎓';
+headlineText.split('').forEach((ch,i) => {
     const span = document.createElement('span');
     span.className = 'kletter';
     span.textContent = ch === ' ' ? '\u00A0' : ch;
-    span.style.transitionDelay = (i * 45) + 'ms';
     h1.appendChild(span);
 });
 function playHeadline(){
